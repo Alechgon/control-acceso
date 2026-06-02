@@ -218,7 +218,7 @@
 <script>
 /* ===================== CONFIGURACIÓN FIJA ===================== */
 /* >>> EDITA AQUÍ <<< Pega tu URL /exec entre las comillas para dejarla fija en el código. */
-const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzs6VwjvpOZQqtCr7W5yLopvDZX25l2IzxzjRIYc-MevPpQq32lg3t-cITppUr2jddlYg/exec";          // ej: "https://script.google.com/macros/s/AAAA.../exec"
+const DEFAULT_ENDPOINT = "";          // ej: "https://script.google.com/macros/s/AAAA.../exec"
 const CONFIG_PASSWORD  = "123456789"; // contraseña para abrir configuración
 /* ============================================================= */
 
@@ -331,27 +331,50 @@ function parseMRZ_TD1(raw){
     if(!res.nombre) res.nombre=lName.replace(/</g,' ').replace(/\s+/g,' ').trim();
   }
 
-  // Datos: sexo + RUN (después de CHL)
+  // Datos: sexo + RUN.  Estructura linea 2:
+  //   AAMMDD <dv> SEXO AAMMDD <dv> CHL <CUERPO_RUN> < <DV> < <resto>
+  //   ej: 9509241 M 2509242 CHL 19095908<2<8   -> RUN = 19095908-2
   if(lData){
-    // sexo: una M o F aislada entre dígitos (AAMMDD[dv]SEXO...)
-    const sx=lData.match(/\d([MF])\d/); 
-    if(sx) res.sexo = sx[1]==='M'?'Masculino':'Femenino';
-    // RUN: bloque tras CHL -> dígitos + < + dv
-    const afterChl=lData.split('CHL')[1]||'';
-    const rm=afterChl.match(/(\d{7,8})<?(\d|K)/);
-    if(rm) res.run=formatRun(rm[1]+rm[2]);
-    else { const rm2=lData.match(/CHL(\d{7,8})(\d|K)/); if(rm2) res.run=formatRun(rm2[1]+rm2[2]); }
+    // SEXO: la primera M o F que aparece despues de los 6 digitos de nacimiento.
+    // Tomamos la M/F que esta entre digitos (xxxxxxN[M/F]yyyyyy)
+    const sx = lData.match(/\d([MF])\d/);
+    if(sx) res.sexo = sx[1]==='M' ? 'Masculino' : 'Femenino';
+    else if(/M/.test(lData) && !/F/.test(lData)) res.sexo='Masculino';
+    else if(/F/.test(lData)) res.sexo='Femenino';
+
+    // RUN: todo lo que viene DESPUES de "CHL".
+    // Regla: cuerpo = digitos hasta el primer '<';  DV = primer caracter (0-9 o K) tras ese '<'.
+    const idx = lData.indexOf('CHL');
+    if(idx !== -1){
+      let resto = lData.slice(idx + 3);              // lo que sigue a CHL
+      // separar por el PRIMER '<'
+      const corte = resto.indexOf('<');
+      let cuerpo = '', dv = '';
+      if(corte !== -1){
+        cuerpo = resto.slice(0, corte).replace(/[^0-9K]/g,'');     // 19095908
+        const tras = resto.slice(corte).replace(/</g,'');          // "28" -> primer char es DV
+        dv = (tras.charAt(0) || '').replace(/[^0-9K]/g,'');        // 2
+      } else {
+        // sin '<': tomar 7-8 digitos + 1 dv
+        const m = resto.match(/(\d{7,8})([0-9K])/);
+        if(m){ cuerpo=m[1]; dv=m[2]; }
+      }
+      if(cuerpo && dv) res.run = formatRunCuerpoDV(cuerpo, dv);
+    }
   }
 
   if(!res.nombre && !res.run) return null;
   return res;
 }
-function formatRun(digits){
-  if(!digits) return '';
-  let dv=digits.slice(-1); let cuerpo=digits.slice(0,-1);
+function formatRunCuerpoDV(cuerpo, dv){
+  if(!cuerpo) return '';
   let c=cuerpo.split('').reverse().join(''), out='';
   for(let i=0;i<c.length;i++){ out+=c[i]; if((i+1)%3===0 && i!==c.length-1) out+='.'; }
   return out.split('').reverse().join('')+'-'+dv;
+}
+function formatRun(digits){
+  if(!digits) return '';
+  return formatRunCuerpoDV(digits.slice(0,-1), digits.slice(-1));
 }
 
 /* ---------- confirmación ---------- */
