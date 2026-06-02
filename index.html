@@ -10,53 +10,31 @@
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <style>
   :root{
-    --green:#003F2D;        /* CBRE green */
-    --green-2:#012a1f;
-    --lime:#17E88F;         /* CBRE accent green */
-    --sand:#CAD1D3;
-    --ink:#0a0f0d;
-    --paper:#f4f6f5;
-    --warn:#E8A100;
-    --danger:#D7263D;
-    --radius:18px;
+    --green:#003F2D;--green-2:#012a1f;--lime:#17E88F;--sand:#CAD1D3;
+    --paper:#f4f6f5;--warn:#E8A100;--danger:#D7263D;--radius:18px;
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
   html,body{height:100%}
-  body{
-    font-family:'Archivo',system-ui,sans-serif;
-    background:var(--green);
-    color:var(--paper);
-    overflow:hidden;
-    position:fixed;inset:0;
-  }
+  body{font-family:'Archivo',system-ui,sans-serif;background:var(--green);color:var(--paper);overflow:hidden;position:fixed;inset:0}
   #app{height:100%;display:flex;flex-direction:column;max-width:560px;margin:0 auto;position:relative}
   .screen{position:absolute;inset:0;display:none;flex-direction:column;animation:fade .35s ease}
   .screen.active{display:flex}
   @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .credit{position:absolute;right:14px;bottom:10px;font-family:'IBM Plex Mono';font-size:10px;color:rgba(255,255,255,.4);letter-spacing:.05em;z-index:5}
 
-  /* ---------- HOME ---------- */
-  #home{
-    justify-content:space-between;padding:40px 28px 36px;
-    background:
-      radial-gradient(120% 80% at 80% -10%, rgba(23,232,143,.18), transparent 60%),
-      radial-gradient(100% 70% at -10% 110%, rgba(23,232,143,.10), transparent 55%),
-      linear-gradient(160deg,var(--green) 0%, var(--green-2) 100%);
-  }
-  .home-top{display:flex;flex-direction:column;gap:6px;padding-top:10px}
+  /* HOME */
+  #home{justify-content:space-between;padding:40px 28px 36px;
+    background:radial-gradient(120% 80% at 80% -10%,rgba(23,232,143,.18),transparent 60%),radial-gradient(100% 70% at -10% 110%,rgba(23,232,143,.10),transparent 55%),linear-gradient(160deg,var(--green) 0%,var(--green-2) 100%)}
   .badge{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.35em;color:var(--lime);text-transform:uppercase}
   .home-center{display:flex;flex-direction:column;gap:18px;align-items:flex-start;margin-top:auto}
   .logo-cbre{font-weight:900;font-size:64px;letter-spacing:-.03em;line-height:.9}
   .logo-cbre span{color:var(--lime)}
-  .home-sub{font-size:21px;font-weight:600;color:var(--sand);letter-spacing:.01em}
+  .home-sub{font-size:21px;font-weight:600;color:var(--sand)}
   .home-sub b{color:var(--paper);font-weight:800}
   .rule{height:3px;width:54px;background:var(--lime);border-radius:3px;margin:4px 0}
   .home-desc{font-size:14px;color:rgba(244,246,245,.62);max-width:330px;line-height:1.5}
   .home-bottom{margin-top:auto;display:flex;flex-direction:column;gap:14px;padding-top:34px}
-  .btn{
-    border:none;border-radius:var(--radius);font-family:'Archivo';font-weight:800;
-    font-size:18px;padding:20px;cursor:pointer;letter-spacing:.01em;
-    display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .12s ease,filter .12s ease;
-  }
+  .btn{border:none;border-radius:var(--radius);font-family:'Archivo';font-weight:800;font-size:18px;padding:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:transform .12s ease,filter .12s ease}
   .btn:active{transform:scale(.975)}
   .btn-primary{background:var(--lime);color:var(--green-2)}
   .btn-ghost{background:rgba(255,255,255,.07);color:var(--paper);border:1px solid rgba(255,255,255,.16)}
@@ -65,41 +43,31 @@
   .dot{width:7px;height:7px;border-radius:50%;background:var(--danger)}
   .dot.ok{background:var(--lime)}
 
-  /* ---------- TOP BAR ---------- */
+  /* TOPBAR */
   .topbar{display:flex;align-items:center;gap:14px;padding:18px 20px;background:var(--green-2);border-bottom:1px solid rgba(255,255,255,.08)}
   .back{background:rgba(255,255,255,.08);border:none;color:#fff;width:42px;height:42px;border-radius:12px;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center}
   .back:active{transform:scale(.92)}
-  .topbar h2{font-size:16px;font-weight:700;letter-spacing:.02em}
+  .topbar h2{font-size:16px;font-weight:700}
   .topbar .sub{font-family:'IBM Plex Mono';font-size:10px;color:var(--lime);letter-spacing:.2em;text-transform:uppercase}
+  .count-pill{font-family:'IBM Plex Mono';font-size:12px;background:rgba(23,232,143,.15);color:var(--lime);padding:6px 12px;border-radius:20px;margin-left:auto}
 
-  /* ---------- SCAN ---------- */
+  /* SCAN */
   #scan{background:#000}
   .cam-wrap{position:relative;flex:1;overflow:hidden;background:#000}
   #video{width:100%;height:100%;object-fit:cover}
-  .frame{
-    position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);
-    width:86%;aspect-ratio:1.586;border-radius:14px;
-    box-shadow:0 0 0 4000px rgba(0,0,0,.55);
-    border:2px solid rgba(255,255,255,.5);
-  }
-  .frame .mrz-guide{
-    position:absolute;left:4%;right:4%;bottom:6%;height:30%;
-    border:2px dashed var(--lime);border-radius:8px;
-    display:flex;align-items:center;justify-content:center;
-    font-family:'IBM Plex Mono';font-size:11px;color:var(--lime);letter-spacing:.15em;
-    background:rgba(23,232,143,.08);
-  }
+  .frame{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:88%;aspect-ratio:1.586;border-radius:14px;box-shadow:0 0 0 4000px rgba(0,0,0,.55);border:2px solid rgba(255,255,255,.5)}
+  .frame .mrz-guide{position:absolute;left:3%;right:3%;bottom:5%;height:34%;border:2px dashed var(--lime);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'IBM Plex Mono';font-size:10px;color:var(--lime);letter-spacing:.12em;background:rgba(23,232,143,.08);text-align:center;padding:4px}
   .scan-hint{position:absolute;top:18px;left:0;right:0;text-align:center;font-size:13px;color:#fff;padding:0 24px;text-shadow:0 1px 4px #000}
   .scan-bottom{padding:18px 20px 26px;background:var(--green-2);display:flex;flex-direction:column;gap:12px}
-  .status{font-family:'IBM Plex Mono';font-size:12px;color:var(--sand);text-align:center;min-height:18px;letter-spacing:.04em}
+  .status{font-family:'IBM Plex Mono';font-size:12px;color:var(--sand);text-align:center;min-height:18px}
   .status.busy{color:var(--warn)}
   .status.ok{color:var(--lime)}
   .scan-actions{display:flex;gap:12px}
   .scan-actions .btn{flex:1;font-size:16px;padding:18px}
 
-  /* ---------- CONFIRM ---------- */
+  /* CONFIRM */
   #confirm{background:linear-gradient(160deg,var(--green) 0%,var(--green-2) 100%);overflow-y:auto}
-  .confirm-inner{padding:22px 20px 30px;display:flex;flex-direction:column;gap:18px;flex:1}
+  .confirm-inner{padding:22px 20px 40px;display:flex;flex-direction:column;gap:18px;flex:1}
   .verify-tag{display:flex;align-items:center;gap:10px;background:rgba(23,232,143,.12);border:1px solid rgba(23,232,143,.3);padding:14px 16px;border-radius:14px}
   .verify-tag .ic{font-size:22px}
   .verify-tag p{font-size:13px;color:var(--sand);line-height:1.4}
@@ -108,23 +76,27 @@
   .data-row{display:flex;flex-direction:column;gap:3px;padding:16px 18px;border-bottom:1px solid rgba(255,255,255,.07)}
   .data-row:last-child{border-bottom:none}
   .data-row .k{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--lime)}
-  .data-row .v{font-size:22px;font-weight:700;letter-spacing:.01em;word-break:break-word}
-  .data-row .v.editable{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:8px 12px;color:#fff;font-family:'Archivo';width:100%}
+  .data-row .v.editable{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px 12px;color:#fff;font-family:'Archivo';font-size:20px;font-weight:700;width:100%}
   .data-row .v.editable:focus{outline:2px solid var(--lime);border-color:var(--lime)}
   .edit-note{font-size:11px;color:rgba(255,255,255,.45);text-align:center}
   .confirm-actions{display:flex;flex-direction:column;gap:12px;margin-top:auto}
   .btn-done{background:var(--lime);color:var(--green-2);font-size:20px;padding:22px}
   .btn-done:disabled{opacity:.5;filter:grayscale(.4)}
 
-  /* ---------- SAVED TOAST ---------- */
-  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(120px);background:#fff;color:var(--green-2);font-weight:800;padding:16px 26px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.2,1.2,.3,1);z-index:50;display:flex;align-items:center;gap:10px;font-size:15px}
-  .toast.show{transform:translateX(-50%) translateY(0)}
-  .toast.err{background:var(--danger);color:#fff}
+  /* RESULT OVERLAY (verde / rojo) */
+  .result{position:fixed;inset:0;z-index:70;display:none;flex-direction:column;align-items:center;justify-content:center;padding:32px;text-align:center;animation:fade .25s ease}
+  .result.show{display:flex}
+  .result.ok{background:linear-gradient(160deg,#046b3f,#012a1f)}
+  .result.block{background:linear-gradient(160deg,#9e0f24,#5a0712)}
+  .result .big-ic{font-size:88px;margin-bottom:8px}
+  .result h1{font-size:34px;font-weight:900;letter-spacing:-.01em;line-height:1.05;margin-bottom:12px}
+  .result p{font-size:16px;color:rgba(255,255,255,.85);max-width:340px;line-height:1.45;margin-bottom:6px}
+  .result .who{font-family:'IBM Plex Mono';font-size:14px;margin-top:14px;background:rgba(255,255,255,.12);padding:10px 16px;border-radius:12px}
+  .result .btn{margin-top:34px;min-width:220px}
+  .result.block .btn{background:#fff;color:#9e0f24}
+  .result.ok .btn{background:var(--lime);color:var(--green-2)}
 
-  /* counter pill */
-  .count-pill{font-family:'IBM Plex Mono';font-size:12px;background:rgba(23,232,143,.15);color:var(--lime);padding:6px 12px;border-radius:20px;margin-left:auto}
-
-  /* config modal */
+  /* MODALS */
   .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;z-index:60;padding:24px}
   .modal-bg.show{display:flex}
   .modal{background:var(--green-2);border:1px solid rgba(255,255,255,.15);border-radius:var(--radius);padding:24px;width:100%;max-width:420px;display:flex;flex-direction:column;gap:14px}
@@ -133,76 +105,68 @@
   .modal input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#fff;border-radius:10px;padding:14px;font-size:14px;font-family:'IBM Plex Mono';width:100%}
   .modal input:focus{outline:2px solid var(--lime)}
   .modal small{color:rgba(255,255,255,.5);font-size:11px;line-height:1.5}
+  .link-box{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:12px;font-family:'IBM Plex Mono';font-size:11px;word-break:break-all;color:var(--sand)}
+  .err-msg{color:#ff9aa6;font-size:12px;min-height:14px}
+
+  .toast{position:fixed;left:50%;bottom:30px;transform:translateX(-50%) translateY(120px);background:#fff;color:var(--green-2);font-weight:800;padding:16px 26px;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.4);transition:transform .35s cubic-bezier(.2,1.2,.3,1);z-index:80;display:flex;align-items:center;gap:10px;font-size:15px}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.err{background:var(--danger);color:#fff}
 </style>
 </head>
 <body>
 <div id="app">
 
-  <!-- ===== HOME ===== -->
+  <!-- HOME -->
   <section id="home" class="screen active">
-    <div class="home-top">
-      <span class="badge">Sistema de Registro</span>
-    </div>
+    <div><span class="badge">Sistema de Registro</span></div>
     <div class="home-center">
       <div class="logo-cbre">CB<span>RE</span></div>
       <div class="rule"></div>
       <div class="home-sub"><b>iCenter Sur</b><br>Control de Acceso</div>
-      <p class="home-desc">Escanea la zona de lectura mecánica (MRZ) de la cédula, verifica visualmente los datos y registra el ingreso.</p>
+      <p class="home-desc">Escanea la zona de lectura mecánica (MRZ) de la cédula, verifica los datos y registra el ingreso.</p>
     </div>
     <div class="home-bottom">
       <button class="btn btn-primary btn-block" onclick="goScan()">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><line x1="7" y1="12" x2="17" y2="12"/></svg>
         Iniciar escaneo
       </button>
-      <button class="btn btn-ghost btn-block" onclick="openConfig()">Configurar conexión</button>
-      <div class="config-line"><span id="cfgDot" class="dot"></span><span id="cfgText">Conexión no configurada</span></div>
+      <button class="btn btn-ghost btn-block" onclick="askPass()">Configuración</button>
+      <div class="config-line"><span id="cfgDot" class="dot"></span><span id="cfgText">Verificando conexión…</span></div>
     </div>
   </section>
 
-  <!-- ===== SCAN ===== -->
+  <!-- SCAN -->
   <section id="scan" class="screen">
     <div class="topbar">
       <button class="back" onclick="goHome()">‹</button>
-      <div>
-        <h2>Escanear cédula</h2>
-        <div class="sub">MRZ · Zona inferior</div>
-      </div>
+      <div><h2>Escanear cédula</h2><div class="sub">MRZ · reverso del carnet</div></div>
       <span class="count-pill" id="countPill">0 hoy</span>
     </div>
     <div class="cam-wrap">
       <video id="video" playsinline muted></video>
-      <div class="frame"><div class="mrz-guide">ALINEA LAS 3 LÍNEAS &lt;&lt;&lt; AQUÍ</div></div>
-      <div class="scan-hint" id="scanHint">Apunta a las líneas de abajo del carnet</div>
+      <div class="frame"><div class="mrz-guide">ALINEA LAS 3 LÍNEAS DE ABAJO DEL CARNET DENTRO DE ESTE RECUADRO</div></div>
+      <div class="scan-hint" id="scanHint">Enfoca las 3 líneas con &lt;&lt;&lt; del reverso</div>
     </div>
     <div class="scan-bottom">
       <div class="status" id="scanStatus">Cámara lista</div>
-      <div class="scan-actions">
-        <button class="btn btn-primary" onclick="captureFrame()">Capturar</button>
-      </div>
+      <div class="scan-actions"><button class="btn btn-primary" onclick="captureFrame()">Capturar</button></div>
     </div>
   </section>
 
-  <!-- ===== CONFIRM ===== -->
+  <!-- CONFIRM -->
   <section id="confirm" class="screen">
     <div class="topbar">
       <button class="back" onclick="backToScan()">‹</button>
-      <div>
-        <h2>Verificar datos</h2>
-        <div class="sub">Compara con el carnet físico</div>
-      </div>
+      <div><h2>Verificar datos</h2><div class="sub">Compara con el carnet físico</div></div>
     </div>
     <div class="confirm-inner">
-      <div class="verify-tag">
-        <span class="ic">👁️</span>
-        <p>Compara <b>visualmente</b> estos datos con el carnet real antes de registrar. Puedes corregir cualquier campo tocándolo.</p>
-      </div>
+      <div class="verify-tag"><span class="ic">👁️</span><p>Compara <b>visualmente</b> con el carnet real. Puedes corregir cualquier campo tocándolo.</p></div>
       <div class="data-card">
         <div class="data-row"><span class="k">RUN</span><input class="v editable" id="fRun"></div>
         <div class="data-row"><span class="k">Nombre completo</span><input class="v editable" id="fNombre"></div>
         <div class="data-row"><span class="k">Sexo</span><input class="v editable" id="fSexo"></div>
-        <div class="data-row"><span class="k">N° Documento</span><input class="v editable" id="fDoc"></div>
       </div>
-      <p class="edit-note">La hora de ingreso se registra automáticamente al guardar.</p>
+      <p class="edit-note">La empresa y el estado se determinan automáticamente al registrar.</p>
       <div class="confirm-actions">
         <button class="btn btn-done btn-block" id="btnDone" onclick="saveRecord()">✓ Realizado — Registrar ingreso</button>
         <button class="btn btn-ghost btn-block" onclick="backToScan()">Escanear de nuevo</button>
@@ -210,255 +174,251 @@
     </div>
   </section>
 
+  <div class="credit">Creado por M. Echeverría</div>
 </div>
 
-<!-- toast -->
-<div class="toast" id="toast"><span id="toastIc">✓</span><span id="toastMsg">Ingreso registrado</span></div>
+<!-- RESULT -->
+<div class="result" id="result">
+  <div class="big-ic" id="resIc">✓</div>
+  <h1 id="resTitle">Ingreso registrado</h1>
+  <p id="resMsg"></p>
+  <div class="who" id="resWho"></div>
+  <button class="btn" onclick="closeResult()">Continuar</button>
+</div>
 
-<!-- config modal -->
-<div class="modal-bg" id="modal">
+<!-- PASSWORD MODAL -->
+<div class="modal-bg" id="passModal">
   <div class="modal">
-    <h3>Conexión a Google Sheets</h3>
-    <label>URL del Web App (Apps Script)</label>
-    <input id="cfgUrl" placeholder="https://script.google.com/macros/s/.../exec">
-    <small>Pega aquí la URL que obtienes al publicar el Apps Script (ver instrucciones). Si la dejas vacía, los registros se guardan solo en este dispositivo.</small>
-    <button class="btn btn-primary" onclick="saveConfig()">Guardar</button>
-    <button class="btn btn-ghost" onclick="closeConfig()">Cancelar</button>
+    <h3>Acceso a configuración</h3>
+    <label>Contraseña</label>
+    <input id="passInput" type="password" inputmode="numeric" placeholder="••••••••">
+    <div class="err-msg" id="passErr"></div>
+    <button class="btn btn-primary" onclick="checkPass()">Entrar</button>
+    <button class="btn btn-ghost" onclick="closePass()">Cancelar</button>
   </div>
 </div>
 
-<script>
-/* ============ ESTADO (en memoria, sin localStorage) ============ */
-const state = {
-  endpoint: "",          // URL del Apps Script
-  count: 0,
-  current: null,
-  stream: null,
-  ocrWorker: null,
-};
+<!-- CONFIG MODAL -->
+<div class="modal-bg" id="cfgModal">
+  <div class="modal">
+    <h3>Conexión activa</h3>
+    <label>Link actual (Apps Script)</label>
+    <div class="link-box" id="curLink">—</div>
+    <label>Cambiar / poner nuevo link</label>
+    <input id="cfgUrl" placeholder="https://script.google.com/.../exec">
+    <small>El link se guarda en este dispositivo. Para cambiarlo de forma permanente para todos, edita el código (ver instrucciones).</small>
+    <button class="btn btn-primary" onclick="saveLink()">Guardar nuevo link</button>
+    <button class="btn btn-ghost" onclick="clearLink()">Eliminar link guardado</button>
+    <button class="btn btn-ghost" onclick="closeCfg()">Cerrar</button>
+  </div>
+</div>
 
-/* ============ NAVEGACIÓN ============ */
-function show(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-}
+<div class="toast" id="toast"><span id="toastIc">✓</span><span id="toastMsg"></span></div>
+
+<script>
+/* ===================== CONFIGURACIÓN FIJA ===================== */
+/* >>> EDITA AQUÍ <<< Pega tu URL /exec entre las comillas para dejarla fija en el código. */
+const DEFAULT_ENDPOINT = "";          // ej: "https://script.google.com/macros/s/AAAA.../exec"
+const CONFIG_PASSWORD  = "123456789"; // contraseña para abrir configuración
+/* ============================================================= */
+
+const state = { endpoint:"", count:0, current:null, stream:null, ocrWorker:null, override:null };
+
+/* endpoint efectivo: override del dispositivo si existe, si no el fijo del código */
+function activeEndpoint(){ return state.override || DEFAULT_ENDPOINT || ""; }
+
+/* ---------- navegación ---------- */
+function show(id){ document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function goHome(){ stopCamera(); show('home'); }
 async function goScan(){ show('scan'); await startCamera(); }
 function backToScan(){ show('scan'); startCamera(); }
 
-/* ============ CONFIG ============ */
-function openConfig(){ document.getElementById('cfgUrl').value = state.endpoint; document.getElementById('modal').classList.add('show'); }
-function closeConfig(){ document.getElementById('modal').classList.remove('show'); }
-function saveConfig(){
-  state.endpoint = document.getElementById('cfgUrl').value.trim();
-  closeConfig(); refreshConfigUI();
+/* ---------- password / config ---------- */
+function askPass(){ document.getElementById('passInput').value=''; document.getElementById('passErr').textContent=''; document.getElementById('passModal').classList.add('show'); }
+function closePass(){ document.getElementById('passModal').classList.remove('show'); }
+function checkPass(){
+  if(document.getElementById('passInput').value === CONFIG_PASSWORD){ closePass(); openCfg(); }
+  else document.getElementById('passErr').textContent='Contraseña incorrecta';
+}
+function openCfg(){
+  document.getElementById('curLink').textContent = activeEndpoint() || 'No configurado';
+  document.getElementById('cfgUrl').value='';
+  document.getElementById('cfgModal').classList.add('show');
+}
+function closeCfg(){ document.getElementById('cfgModal').classList.remove('show'); }
+function saveLink(){
+  const v=document.getElementById('cfgUrl').value.trim();
+  if(v){ state.override=v; try{ localStorage.setItem('ca_endpoint',v);}catch(e){} }
+  closeCfg(); refreshConfigUI();
+}
+function clearLink(){
+  state.override=null; try{ localStorage.removeItem('ca_endpoint'); }catch(e){}
+  closeCfg(); refreshConfigUI();
 }
 function refreshConfigUI(){
-  const dot = document.getElementById('cfgDot'), txt = document.getElementById('cfgText');
-  if(state.endpoint){ dot.classList.add('ok'); txt.textContent = 'Conectado a Google Sheets'; }
-  else { dot.classList.remove('ok'); txt.textContent = 'Sin nube — guardado local'; }
+  const dot=document.getElementById('cfgDot'), txt=document.getElementById('cfgText');
+  if(activeEndpoint()){ dot.classList.add('ok'); txt.textContent='Conectado a Google Sheets'; }
+  else { dot.classList.remove('ok'); txt.textContent='Sin conexión — configure el link'; }
 }
 
-/* ============ CÁMARA ============ */
+/* ---------- cámara ---------- */
 async function startCamera(){
-  const video = document.getElementById('video');
-  setStatus('Iniciando cámara…','busy');
+  const video=document.getElementById('video'); setStatus('Iniciando cámara…','busy');
   try{
     if(state.stream) stopCamera();
-    state.stream = await navigator.mediaDevices.getUserMedia({
-      video:{ facingMode:{ ideal:'environment' }, width:{ideal:1920}, height:{ideal:1080} },
-      audio:false
-    });
-    video.srcObject = state.stream;
-    await video.play();
+    state.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false});
+    video.srcObject=state.stream; await video.play();
     setStatus('Cámara lista — alinea la MRZ y captura','');
-  }catch(e){
-    setStatus('No se pudo abrir la cámara: '+e.message,'busy');
-  }
+  }catch(e){ setStatus('No se pudo abrir la cámara: '+e.message,'busy'); }
 }
-function stopCamera(){
-  if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; }
-}
+function stopCamera(){ if(state.stream){ state.stream.getTracks().forEach(t=>t.stop()); state.stream=null; } }
 
-/* ============ OCR + CAPTURA ============ */
+/* ---------- captura + OCR ---------- */
 async function captureFrame(){
-  const video = document.getElementById('video');
+  const video=document.getElementById('video');
   if(!video.videoWidth){ setStatus('La cámara aún no está lista','busy'); return; }
   setStatus('Leyendo MRZ…','busy');
-
-  // recorte de la franja inferior (donde está la MRZ dentro del marco)
-  const vw = video.videoWidth, vh = video.videoHeight;
-  const c = document.createElement('canvas');
-  // tomamos el ~40% inferior central de la imagen
-  const cropY = Math.floor(vh*0.55), cropH = Math.floor(vh*0.42);
-  const cropX = Math.floor(vw*0.05), cropW = Math.floor(vw*0.90);
-  c.width = cropW; c.height = cropH;
-  const ctx = c.getContext('2d');
-  ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
-  // preprocesado: escala de grises + contraste
-  const img = ctx.getImageData(0,0,cropW,cropH);
-  const d = img.data;
-  for(let i=0;i<d.length;i+=4){
-    let g = 0.299*d[i]+0.587*d[i+1]+0.114*d[i+2];
-    g = g>135 ? 255 : (g<95 ? 0 : g);   // umbral suave
-    d[i]=d[i+1]=d[i+2]=g;
-  }
+  const vw=video.videoWidth, vh=video.videoHeight;
+  const c=document.createElement('canvas');
+  const cropY=Math.floor(vh*0.52), cropH=Math.floor(vh*0.46);
+  const cropX=Math.floor(vw*0.04), cropW=Math.floor(vw*0.92);
+  c.width=cropW; c.height=cropH;
+  const ctx=c.getContext('2d');
+  ctx.drawImage(video,cropX,cropY,cropW,cropH,0,0,cropW,cropH);
+  const img=ctx.getImageData(0,0,cropW,cropH), d=img.data;
+  for(let i=0;i<d.length;i+=4){ let g=0.299*d[i]+0.587*d[i+1]+0.114*d[i+2]; g=g>135?255:(g<95?0:g); d[i]=d[i+1]=d[i+2]=g; }
   ctx.putImageData(img,0,0);
-
   try{
     if(!state.ocrWorker){
       setStatus('Cargando motor OCR (primera vez)…','busy');
-      state.ocrWorker = await Tesseract.createWorker('eng');
-      await state.ocrWorker.setParameters({
-        tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<',
-        tessedit_pageseg_mode:'6'
-      });
+      state.ocrWorker=await Tesseract.createWorker('eng');
+      await state.ocrWorker.setParameters({tessedit_char_whitelist:'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789<',tessedit_pageseg_mode:'6'});
     }
-    const { data } = await state.ocrWorker.recognize(c);
-    const parsed = parseMRZ(data.text);
-    if(parsed){
-      state.current = parsed;
-      fillConfirm(parsed);
-      stopCamera();
-      show('confirm');
-    }else{
-      setStatus('No se detectó MRZ legible. Acerca, estabiliza y reintenta.','busy');
-    }
-  }catch(e){
-    setStatus('Error de lectura: '+e.message,'busy');
-  }
+    const {data}=await state.ocrWorker.recognize(c);
+    const parsed=parseMRZ_TD1(data.text);
+    if(parsed){ state.current=parsed; fillConfirm(parsed); stopCamera(); show('confirm'); }
+    else setStatus('No se detectó MRZ legible. Acerca, estabiliza y reintenta.','busy');
+  }catch(e){ setStatus('Error de lectura: '+e.message,'busy'); }
 }
 
-/* ============ PARSEO MRZ (TD1 — cédula chilena) ============ */
-function parseMRZ(raw){
-  // normaliza: solo líneas con muchos '<' o largas
-  let lines = raw.toUpperCase().split('\n')
-    .map(l=>l.replace(/[^A-Z0-9<]/g,'').trim())
-    .filter(l=>l.length>=10);
-  if(lines.length<2) return null;
-  // ordena por probabilidad de ser MRZ (más '<' = más probable)
-  lines = lines.filter(l => (l.match(/</g)||[]).length>=1 || /\d{6,}/.test(l));
+/* ---------- PARSEO MRZ TD1 (cédula chilena) ----------
+   Línea 1: I<CHL<DOCUMENTO><DV>...      -> NO usamos como RUN
+   Línea 2: AAMMDD<dv> SEXO AAMMDD<dv> CHL <RUN><DV>< ...
+   Línea 3: PATERNO<MATERNO<<NOMBRE1<NOMBRE2
+*/
+function parseMRZ_TD1(raw){
+  let lines=raw.toUpperCase().split('\n').map(l=>l.replace(/[^A-Z0-9<]/g,'').trim()).filter(l=>l.length>=8);
   if(lines.length<2) return null;
 
-  // intenta identificar las 3 líneas TD1
-  // Línea 1: documento ; Línea 2: nac/sexo/venc + RUN ; Línea 3: nombre
-  let lDoc=null,lData=null,lName=null;
-  for(const l of lines){
-    if(/<</.test(l) && /[A-Z]{3,}/.test(l) && !lName) { lName=l; continue; }
-  }
-  // la línea de datos suele tener patrón fecha(6)dígito sexo
-  for(const l of lines){
-    if(l===lName) continue;
-    if(/\d{6}/.test(l) && /[MF<]/.test(l) && !lData){ lData=l; continue; }
-  }
-  for(const l of lines){
-    if(l!==lName && l!==lData){ lDoc=l; break; }
-  }
+  // Identificar líneas
+  let lName=null,lData=null,lDoc=null;
+  // nombre: tiene << y letras
+  for(const l of lines){ if(/[A-Z]{2,}<<?[A-Z<]/.test(l) && (l.match(/</g)||[]).length>=2 && /[A-Z]{3,}/.test(l)){ lName=l; break; } }
+  // datos: contiene CHL en medio y bastantes dígitos
+  for(const l of lines){ if(l===lName) continue; if(/CHL/.test(l) && /\d{6,}/.test(l)){ lData=l; break; } }
+  // doc: la que empieza con I y tiene CHL al inicio
+  for(const l of lines){ if(l===lName||l===lData) continue; if(/^I?[A-Z]?CHL/.test(l) || /^I</.test(l)){ lDoc=l; break; } }
+  if(!lData){ for(const l of lines){ if(l!==lName && /\d{6,}/.test(l)){ lData=l; break; } } }
 
-  const res = { run:'', nombre:'', sexo:'', doc:'' };
+  const res={run:'',nombre:'',sexo:''};
 
-  // Nombre: APELLIDOS<<NOMBRES
+  // Nombre
   if(lName){
-    const parts = lName.split('<<');
-    const apellidos = (parts[0]||'').replace(/</g,' ').trim();
-    const nombres = (parts[1]||'').replace(/</g,' ').trim();
-    res.nombre = (nombres+' '+apellidos).replace(/\s+/g,' ').trim();
-    if(!res.nombre) res.nombre = lName.replace(/</g,' ').replace(/\s+/g,' ').trim();
+    const parts=lName.split('<<');
+    const apellidos=(parts[0]||'').replace(/</g,' ').replace(/\s+/g,' ').trim();
+    const nombres=(parts[1]||'').replace(/</g,' ').replace(/\s+/g,' ').trim();
+    res.nombre=(nombres+' '+apellidos).replace(/\s+/g,' ').trim();
+    if(!res.nombre) res.nombre=lName.replace(/</g,' ').replace(/\s+/g,' ').trim();
   }
 
-  // Documento: primeros dígitos largos de la línea 1
-  if(lDoc){
-    const m = lDoc.match(/[A-Z]*?(\d{8,9})/);
-    res.doc = m ? m[1] : (lDoc.match(/\d{6,}/)||[''])[0];
-  }
-
-  // Datos: fecha nac (AAMMDD) + dígito + sexo + venc + país + RUN
+  // Datos: sexo + RUN (después de CHL)
   if(lData){
-    const sx = lData.match(/(\d)([MF])(\d)/);
-    if(sx) res.sexo = sx[2]==='M'?'Masculino':'Femenino';
-    else if(/[MF]/.test(lData)){ res.sexo = lData.includes('F')?'Femenino':'Masculino'; }
-    // RUN chileno: aparece como bloque de dígitos al final
-    const runMatch = lData.match(/(\d{7,8})(\d)(?!.*\d)/);
-    if(runMatch){
-      res.run = formatRun(runMatch[1]+runMatch[2]);
-    }
+    // sexo: una M o F aislada entre dígitos (AAMMDD[dv]SEXO...)
+    const sx=lData.match(/\d([MF])\d/); 
+    if(sx) res.sexo = sx[1]==='M'?'Masculino':'Femenino';
+    // RUN: bloque tras CHL -> dígitos + < + dv
+    const afterChl=lData.split('CHL')[1]||'';
+    const rm=afterChl.match(/(\d{7,8})<?(\d|K)/);
+    if(rm) res.run=formatRun(rm[1]+rm[2]);
+    else { const rm2=lData.match(/CHL(\d{7,8})(\d|K)/); if(rm2) res.run=formatRun(rm2[1]+rm2[2]); }
   }
 
-  // si no obtuvimos run desde lData, intenta desde cualquier línea con CHL
-  if(!res.run){
-    for(const l of lines){
-      const m = l.match(/CHL(\d{7,9})/);
-      if(m){ res.run = formatRun(m[1]); break; }
-    }
-  }
-
-  // requiere al menos nombre o documento para considerarlo válido
-  if(!res.nombre && !res.doc && !res.run) return null;
+  if(!res.nombre && !res.run) return null;
   return res;
 }
-
 function formatRun(digits){
   if(!digits) return '';
-  const cuerpo = digits.slice(0,-1), dv = digits.slice(-1);
-  let out='', c=cuerpo.split('').reverse().join('');
-  for(let i=0;i<c.length;i++){ out += c[i]; if((i+1)%3===0 && i!==c.length-1) out+='.'; }
-  out = out.split('').reverse().join('');
-  return out+'-'+dv;
+  let dv=digits.slice(-1); let cuerpo=digits.slice(0,-1);
+  let c=cuerpo.split('').reverse().join(''), out='';
+  for(let i=0;i<c.length;i++){ out+=c[i]; if((i+1)%3===0 && i!==c.length-1) out+='.'; }
+  return out.split('').reverse().join('')+'-'+dv;
 }
 
-/* ============ CONFIRMACIÓN ============ */
+/* ---------- confirmación ---------- */
 function fillConfirm(p){
-  document.getElementById('fRun').value = p.run||'';
-  document.getElementById('fNombre').value = p.nombre||'';
-  document.getElementById('fSexo').value = p.sexo||'';
-  document.getElementById('fDoc').value = p.doc||'';
+  document.getElementById('fRun').value=p.run||'';
+  document.getElementById('fNombre').value=p.nombre||'';
+  document.getElementById('fSexo').value=p.sexo||'';
 }
 
-/* ============ GUARDAR ============ */
+/* ---------- guardar + cotejo (backend) ---------- */
 async function saveRecord(){
-  const rec = {
-    run: document.getElementById('fRun').value.trim(),
-    nombre: document.getElementById('fNombre').value.trim(),
-    sexo: document.getElementById('fSexo').value.trim(),
-    doc: document.getElementById('fDoc').value.trim(),
-    hora: new Date().toLocaleString('es-CL', { dateStyle:'short', timeStyle:'medium' }),
+  const rec={
+    run:document.getElementById('fRun').value.trim(),
+    nombre:document.getElementById('fNombre').value.trim(),
+    sexo:document.getElementById('fSexo').value.trim(),
+    hora:new Date().toLocaleString('es-CL',{dateStyle:'short',timeStyle:'medium'})
   };
-  const btn = document.getElementById('btnDone');
-  btn.disabled = true; btn.textContent = 'Registrando…';
+  const btn=document.getElementById('btnDone'); btn.disabled=true; btn.textContent='Registrando…';
 
-  let ok = true;
-  if(state.endpoint){
-    try{
-      await fetch(state.endpoint, {
-        method:'POST',
-        mode:'no-cors',
-        headers:{ 'Content-Type':'text/plain;charset=utf-8' },
-        body: JSON.stringify(rec)
-      });
-    }catch(e){ ok=false; }
+  if(!activeEndpoint()){
+    btn.disabled=false; btn.textContent='✓ Realizado — Registrar ingreso';
+    toast('Configure el link primero','!',true); return;
   }
 
-  state.count++;
-  document.getElementById('countPill').textContent = state.count+' hoy';
-  btn.disabled = false; btn.textContent = '✓ Realizado — Registrar ingreso';
+  let resp=null;
+  try{
+    // usamos GET con parámetros para poder LEER la respuesta del cotejo (no-cors no deja leer)
+    const url=activeEndpoint()+'?'+new URLSearchParams(rec).toString();
+    const r=await fetch(url,{method:'GET'});
+    resp=await r.json();
+  }catch(e){ resp=null; }
 
-  if(state.endpoint && ok) toast('Ingreso registrado en la nube','✓',false);
-  else if(state.endpoint && !ok) toast('Guardado local (sin conexión)','!',true);
-  else toast('Registrado en este dispositivo','✓',false);
+  state.count++; document.getElementById('countPill').textContent=state.count+' hoy';
+  btn.disabled=false; btn.textContent='✓ Realizado — Registrar ingreso';
 
-  setTimeout(()=>backToScan(), 700);
+  if(!resp){ toast('Error de conexión al registrar','!',true); return; }
+
+  if(resp.blocked){
+    showResult('block', rec, resp);
+  }else{
+    showResult('ok', rec, resp);
+  }
 }
 
-/* ============ UI HELPERS ============ */
+/* ---------- pantalla de resultado ---------- */
+function showResult(type, rec, resp){
+  const el=document.getElementById('result');
+  el.className='result show '+type;
+  if(type==='block'){
+    document.getElementById('resIc').textContent='⛔';
+    document.getElementById('resTitle').textContent='USUARIO CON PROHIBICIÓN DE INGRESO';
+    document.getElementById('resMsg').textContent='Esta persona figura en la lista de prohibidos. No autorizar el ingreso.';
+  }else{
+    document.getElementById('resIc').textContent='✓';
+    document.getElementById('resTitle').textContent='Ingreso registrado';
+    document.getElementById('resMsg').textContent = resp.empresa ? ('Empresa: '+resp.empresa) : 'Registrado. Empresa por revisar.';
+  }
+  document.getElementById('resWho').textContent=(rec.nombre||'')+'  ·  '+(rec.run||'');
+}
+function closeResult(){ document.getElementById('result').classList.remove('show'); backToScan(); }
+
+/* ---------- helpers ---------- */
 function setStatus(t,cls){ const s=document.getElementById('scanStatus'); s.textContent=t; s.className='status '+(cls||''); }
-function toast(msg,ic,err){
-  const t=document.getElementById('toast');
-  document.getElementById('toastMsg').textContent=msg;
-  document.getElementById('toastIc').textContent=ic;
-  t.className='toast show'+(err?' err':'');
-  setTimeout(()=>t.classList.remove('show'),2200);
-}
+function toast(msg,ic,err){ const t=document.getElementById('toast'); document.getElementById('toastMsg').textContent=msg; document.getElementById('toastIc').textContent=ic; t.className='toast show'+(err?' err':''); setTimeout(()=>t.classList.remove('show'),2200); }
 
+/* init: carga override guardado en el dispositivo */
+try{ const saved=localStorage.getItem('ca_endpoint'); if(saved) state.override=saved; }catch(e){}
 refreshConfigUI();
 </script>
 </body>
