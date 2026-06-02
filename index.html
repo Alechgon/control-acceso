@@ -218,7 +218,7 @@
 <script>
 /* ===================== CONFIGURACIÓN FIJA ===================== */
 /* >>> EDITA AQUÍ <<< Pega tu URL /exec entre las comillas para dejarla fija en el código. */
-const DEFAULT_ENDPOINT = "https://script.google.com/macros/s/AKfycbzs6VwjvpOZQqtCr7W5yLopvDZX25l2IzxzjRIYc-MevPpQq32lg3t-cITppUr2jddlYg/exec";          // ej: "https://script.google.com/macros/s/AAAA.../exec"
+const DEFAULT_ENDPOINT = "";          // ej: "https://script.google.com/macros/s/AAAA.../exec"
 const CONFIG_PASSWORD  = "123456789"; // contraseña para abrir configuración
 /* ============================================================= */
 
@@ -310,19 +310,52 @@ function parseMRZ_TD1(raw){
   let lines=raw.toUpperCase().split('\n').map(l=>l.replace(/[^A-Z0-9<]/g,'').trim()).filter(l=>l.length>=8);
   if(lines.length<2) return null;
 
-  // Identificar líneas
-  let lName=null,lData=null,lDoc=null;
-  // nombre: tiene << y letras
-  for(const l of lines){ if(/[A-Z]{2,}<<?[A-Z<]/.test(l) && (l.match(/</g)||[]).length>=2 && /[A-Z]{3,}/.test(l)){ lName=l; break; } }
-  // datos: contiene CHL en medio y bastantes dígitos
-  for(const l of lines){ if(l===lName) continue; if(/CHL/.test(l) && /\d{6,}/.test(l)){ lData=l; break; } }
-  // doc: la que empieza con I y tiene CHL al inicio
-  for(const l of lines){ if(l===lName||l===lData) continue; if(/^I?[A-Z]?CHL/.test(l) || /^I</.test(l)){ lDoc=l; break; } }
-  if(!lData){ for(const l of lines){ if(l!==lName && /\d{6,}/.test(l)){ lData=l; break; } } }
+  // ---- Identificación robusta de las 3 líneas ----
+  // LÍNEA DATOS (línea 2): contiene 'CHL' Y tiene 13+ dígitos (fechas + RUN). Única con esa densidad numérica.
+  // LÍNEA DOCUMENTO (línea 1): empieza con I y trae 'CHL' al comienzo (INCHL...). NO la usamos.
+  // LÍNEA NOMBRE (línea 3): tiene letras y '<<', y NO es la de datos ni la de documento.
+
+  function cuentaDigitos(s){ return (s.match(/\d/g)||[]).length; }
+  function cuentaLetras(s){ return (s.match(/[A-Z]/g)||[]).length; }
+
+  let lData=null, lDoc=null, lName=null;
+
+  // 1) Línea de datos: la que tiene CHL y MÁS dígitos
+  let mejorData=-1;
+  for(const l of lines){
+    if(/CHL/.test(l) && cuentaDigitos(l)>=11){
+      if(cuentaDigitos(l)>mejorData){ mejorData=cuentaDigitos(l); lData=l; }
+    }
+  }
+
+  // 2) Línea documento: empieza con I y CHL cerca del inicio, distinta de lData
+  for(const l of lines){
+    if(l===lData) continue;
+    if(/^I.{0,2}CHL/.test(l) || /^I</.test(l)){ lDoc=l; break; }
+  }
+
+  // 3) Línea nombre: la que tiene MÁS letras y un '<' (apellidos<nombres), distinta de lData y lDoc
+  let mejorName=-1;
+  for(const l of lines){
+    if(l===lData || l===lDoc) continue;
+    const letras=cuentaLetras(l);
+    // debe ser mayormente texto: más letras que dígitos y contener al menos un '<'
+    if(letras>=4 && letras>cuentaDigitos(l) && /</.test(l)){
+      if(letras>mejorName){ mejorName=letras; lName=l; }
+    }
+  }
+  // respaldo: si no encontró nombre, toma la línea con más letras que no sea data/doc
+  if(!lName){
+    for(const l of lines){
+      if(l===lData||l===lDoc) continue;
+      const letras=cuentaLetras(l);
+      if(letras>mejorName){ mejorName=letras; lName=l; }
+    }
+  }
 
   const res={run:'',nombre:'',sexo:''};
 
-  // Nombre
+  // Nombre: PATERNO<MATERNO<<NOMBRE1<NOMBRE2  (orden final: nombres + apellidos)
   if(lName){
     const parts=lName.split('<<');
     const apellidos=(parts[0]||'').replace(/</g,' ').replace(/\s+/g,' ').trim();
@@ -330,6 +363,7 @@ function parseMRZ_TD1(raw){
     res.nombre=(nombres+' '+apellidos).replace(/\s+/g,' ').trim();
     if(!res.nombre) res.nombre=lName.replace(/</g,' ').replace(/\s+/g,' ').trim();
   }
+
 
   // Datos: sexo + RUN.  Estructura linea 2:
   //   AAMMDD <dv> SEXO AAMMDD <dv> CHL <CUERPO_RUN> < <DV> < <resto>
@@ -446,3 +480,4 @@ refreshConfigUI();
 </script>
 </body>
 </html>
+
